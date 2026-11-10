@@ -1,0 +1,1264 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Jadwal Kuliah</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;500;600&display=swap"
+    />
+    <style>
+      :root {
+        --bg: #f3f5f9;
+        --card: #fff;
+        --ink: #18202f;
+        --mute: #5d6b82;
+        --line: #dde3ee;
+        --off: #2457d6;
+        --on: #0f8a6a;
+        --exam: #c2362f;
+        --free: #7a6a9a;
+        --soft: #eaeff8;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #0f141d;
+          --card: #171e2b;
+          --ink: #e7ecf5;
+          --mute: #97a4ba;
+          --line: #263044;
+          --off: #6d9bff;
+          --on: #3fd0a5;
+          --exam: #ff7b72;
+          --free: #b7a4e0;
+          --soft: #1f2838;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #0f141d;
+        --card: #171e2b;
+        --ink: #e7ecf5;
+        --mute: #97a4ba;
+        --line: #263044;
+        --off: #6d9bff;
+        --on: #3fd0a5;
+        --exam: #ff7b72;
+        --free: #b7a4e0;
+        --soft: #1f2838;
+      }
+      html {
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          16px/1.5 Figtree,
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+      }
+      h1,
+      h2,
+      .wn {
+        font-family: "Bricolage Grotesque", Georgia, "Times New Roman", serif;
+        margin: 0;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+        color: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      :focus-visible {
+        outline: 3px solid var(--off);
+        outline-offset: 2px;
+      }
+      .wrap {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 20px 16px 60px;
+      }
+      .top {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+      .top h1 {
+        font-size: 1.6rem;
+        font-weight: 800;
+      }
+      .who {
+        color: var(--mute);
+        font-size: 0.9rem;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .btn {
+        border: 1px solid var(--line);
+        background: var(--card);
+        border-radius: 10px;
+        padding: 8px 14px;
+        font-weight: 600;
+      }
+      .btn:hover {
+        background: var(--soft);
+      }
+      .btn.pri {
+        background: var(--off);
+        border-color: var(--off);
+        color: #fff;
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      .bar .sp {
+        flex: 1;
+      }
+      .seg {
+        display: inline-flex;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden;
+        background: var(--card);
+      }
+      .seg button {
+        border: 0;
+        background: none;
+        padding: 8px 16px;
+        font-weight: 600;
+      }
+      .seg button.on {
+        background: var(--ink);
+        color: var(--bg);
+      }
+      .title {
+        font-weight: 600;
+        min-width: 11rem;
+        text-align: center;
+      }
+      .whead {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 6px 14px;
+        margin: 6px 0 16px;
+      }
+      .wn {
+        font-size: 2.6rem;
+        font-weight: 800;
+        line-height: 1;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 99px;
+        padding: 3px 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        background: var(--soft);
+      }
+      .badge:before {
+        content: "";
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--c);
+      }
+      .offline {
+        --c: var(--off);
+      }
+      .online {
+        --c: var(--on);
+      }
+      .exam {
+        --c: var(--exam);
+      }
+      .free {
+        --c: var(--free);
+      }
+      .days {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+        gap: 14px;
+      }
+      .day {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-left: 5px solid var(--c);
+        border-radius: 12px;
+        padding: 14px;
+      }
+      .day.today {
+        box-shadow: 0 0 0 2px var(--c);
+      }
+      .day h2 {
+        font-size: 1.1rem;
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .day h2 small {
+        font:
+          500 0.85rem Figtree,
+          sans-serif;
+        color: var(--mute);
+      }
+      .prog {
+        height: 5px;
+        background: var(--soft);
+        border-radius: 9px;
+        margin: 8px 0 10px;
+        overflow: hidden;
+      }
+      .prog i {
+        display: block;
+        height: 100%;
+        background: var(--c);
+      }
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      li {
+        display: flex;
+        align-items: flex-start;
+        gap: 4px;
+        border-top: 1px solid var(--line);
+      }
+      li label {
+        flex: 1;
+        display: flex;
+        gap: 8px;
+        padding: 7px 0;
+        cursor: pointer;
+        align-items: flex-start;
+      }
+      li input {
+        margin-top: 5px;
+        accent-color: var(--c);
+        width: 16px;
+        height: 16px;
+        flex: none;
+      }
+      .tm {
+        width: 3.1rem;
+        flex: none;
+        color: var(--mute);
+        font-variant-numeric: tabular-nums;
+        font-size: 0.88rem;
+        padding-top: 1px;
+      }
+      li.d .tx {
+        text-decoration: line-through;
+        color: var(--mute);
+      }
+      .x {
+        border: 0;
+        background: none;
+        color: var(--mute);
+        font-size: 1.2rem;
+        padding: 4px 8px;
+      }
+      .add {
+        display: flex;
+        gap: 6px;
+        margin-top: 8px;
+      }
+      .add input {
+        flex: 1;
+        min-width: 0;
+        border: 1px solid var(--line);
+        background: var(--bg);
+        border-radius: 8px;
+        padding: 6px 10px;
+      }
+      .add button {
+        padding: 6px 12px;
+      }
+      .mhead,
+      .mgrid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 6px;
+      }
+      .mhead {
+        margin-bottom: 6px;
+        color: var(--mute);
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-align: center;
+      }
+      .cell {
+        border: 1px solid var(--line);
+        border-top: 4px solid var(--c);
+        background: var(--card);
+        border-radius: 8px;
+        padding: 6px;
+        min-height: 70px;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .cell b {
+        font-size: 1rem;
+      }
+      .cell small {
+        color: var(--mute);
+        font-size: 0.75rem;
+      }
+      .cell.dim {
+        opacity: 0.4;
+      }
+      .cell.today {
+        box-shadow: 0 0 0 2px var(--ink);
+      }
+      .cell .prog {
+        margin: auto 0 0;
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+        margin-bottom: 16px;
+      }
+      .panel label {
+        display: block;
+        margin: 8px 0 4px;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      .panel input,
+      .panel select,
+      .panel textarea {
+        width: 100%;
+        max-width: 420px;
+        border: 1px solid var(--line);
+        background: var(--bg);
+        border-radius: 8px;
+        padding: 8px 10px;
+      }
+      .panel textarea {
+        max-width: none;
+        height: 220px;
+        font:
+          13px/1.4 ui-monospace,
+          Menlo,
+          Consolas,
+          monospace;
+      }
+      .auth {
+        max-width: 380px;
+        margin: 8vh auto;
+      }
+      .auth h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 4px;
+      }
+      .msg {
+        color: var(--exam);
+        min-height: 1.4em;
+        font-size: 0.9rem;
+      }
+      .note {
+        color: var(--mute);
+        font-size: 0.85rem;
+      }
+      #toast {
+        position: fixed;
+        left: 50%;
+        bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+        transform: translateX(-50%);
+        background: var(--ink);
+        color: var(--bg);
+        padding: 9px 16px;
+        border-radius: 10px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+      }
+      #toast.show {
+        opacity: 1;
+      }
+      @media (max-width: 640px) {
+        .cell {
+          min-height: 58px;
+          padding: 4px;
+        }
+        .cell small {
+          font-size: 0.65rem;
+        }
+        .title {
+          min-width: 0;
+          flex: 1;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap" id="app"></div>
+    <div id="toast" role="status"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+    <script>
+      (function () {
+        "use strict";
+        /* ISI DUA BARIS INI dari Supabase: Project Settings > API */
+        var SB_URL = "sb_publishable_cwWr4PWNSOSCcvRE6eFmnw_QdvgbqJO",
+          SB_KEY = "sb_secret_TEETG1KiqgJVEc2NDDQVrA_o_YKRs7Y";
+        var sb = null;
+        try {
+          if (window.supabase && SB_URL.indexOf("http") === 0)
+            sb = supabase.createClient(SB_URL, SB_KEY);
+        } catch (e) {}
+        var $ = function (s) {
+          return document.querySelector(s);
+        };
+        var mem = {};
+        var LS = {
+          get: function (k, d) {
+            try {
+              var v = localStorage.getItem(k);
+              return v ? JSON.parse(v) : d;
+            } catch (e) {
+              return k in mem ? mem[k] : d;
+            }
+          },
+          set: function (k, v) {
+            try {
+              localStorage.setItem(k, JSON.stringify(v));
+            } catch (e) {
+              mem[k] = v;
+            }
+          },
+          del: function (k) {
+            try {
+              localStorage.removeItem(k);
+            } catch (e) {
+              delete mem[k];
+            }
+          },
+        };
+        var D = 864e5,
+          DN = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+        var MN = [
+          "Januari",
+          "Februari",
+          "Maret",
+          "April",
+          "Mei",
+          "Juni",
+          "Juli",
+          "Agustus",
+          "September",
+          "Oktober",
+          "November",
+          "Desember",
+        ];
+        var KL = {
+          offline: "Offline",
+          online: "Online",
+          exam: "Ujian",
+          free: "Di luar semester",
+        };
+        var pad = function (n) {
+          return String(n).padStart(2, "0");
+        };
+        var fmt = function (d) {
+          return (
+            d.getFullYear() +
+            "-" +
+            pad(d.getMonth() + 1) +
+            "-" +
+            pad(d.getDate())
+          );
+        };
+        var parse = function (s) {
+          var a = s.split("-").map(Number);
+          return new Date(a[0], a[1] - 1, a[2]);
+        };
+        var add = function (d, n) {
+          var x = new Date(d);
+          x.setDate(x.getDate() + n);
+          return x;
+        };
+        var mon = function (d) {
+          var x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+          return add(x, -((x.getDay() + 6) % 7));
+        };
+        var ds = function (d) {
+          return d.getDate() + " " + MN[d.getMonth()].slice(0, 3);
+        };
+        var esc = function (s) {
+          return String(s).replace(/[&<>"']/g, function (c) {
+            return {
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            }[c];
+          });
+        };
+
+        var T = {
+          mon: [
+            ["06.00", "Bangun, olahraga ringan, sarapan"],
+            ["07.00", "Cek semua deadline minggu ini"],
+            ["08.00", "Deep work: tugas terberat atau terdekat"],
+            ["11.00", "Baca materi Selasa dan Rabu"],
+            ["12.00", "Makan siang dan istirahat"],
+            ["13.00", "Ngoding atau tugas lanjutan"],
+            ["16.00", "Waktu bebas: olahraga, teman, hobi"],
+            ["19.00", "Rencana mingguan"],
+            ["22.00", "Tidur (Rabu masuk pagi)"],
+          ],
+          tueoffline: [
+            ["06.00", "Bangun, ibadah, olahraga ringan, sarapan"],
+            ["07.00", "Blok belajar pagi: tugas atau proyek"],
+            ["10.00", "Mandi, makan, siap-siap"],
+            ["10.45", "Perjalanan ke kampus"],
+            ["11.40", "Kuliah sampai 18.00 (bawa bekal)"],
+            ["18.00", "Perjalanan pulang"],
+            ["19.00", "Makan malam dan istirahat"],
+            ["20.00", "Review materi hari ini (30 menit)"],
+            ["20.30", "Santai, siapkan tas untuk Rabu"],
+            ["22.00", "Tidur"],
+          ],
+          tueonline: [
+            ["06.00", "Bangun, olahraga, sarapan"],
+            ["07.00", "Deep work: tugas besar atau ngoding"],
+            ["10.30", "Makan siang, siapkan meja dan laptop"],
+            ["11.40", "Kuliah online sampai 18.00 (notifikasi HP mati)"],
+            ["18.00", "Makan malam dan istirahat"],
+            ["19.00", "Review materi hari ini (30 menit)"],
+            ["19.30", "Santai atau latihan ringan"],
+            ["22.00", "Tidur"],
+          ],
+          wedoffline: [
+            ["04.45", "Bangun, ibadah, sarapan"],
+            ["05.30", "Siap-siap dan berangkat"],
+            ["07.00", "Kuliah, catat poin penting"],
+            ["12.00", "Makan siang dan istirahat"],
+            ["13.00", "Tugas di kampus (WiFi, lab) atau pulang"],
+            ["16.00", "Review materi hari ini (30 menit)"],
+            ["16.30", "Blok ngoding atau tugas"],
+            ["18.00", "Makan malam, ibadah, santai"],
+            ["19.30", "Belajar ringan atau bebas"],
+            ["22.30", "Tidur"],
+          ],
+          wedonline: [
+            ["05.30", "Bangun, olahraga, sarapan"],
+            ["06.30", "Siapkan meja, matikan notifikasi"],
+            ["07.00", "Kuliah online sampai 12.00"],
+            ["12.00", "Makan siang dan istirahat"],
+            ["13.00", "Deep work: tugas besar atau proyek"],
+            ["16.00", "Waktu bebas atau olahraga"],
+            ["19.00", "Review materi hari ini (30 menit)"],
+            ["19.30", "Latihan soal atau santai"],
+            ["22.30", "Tidur"],
+          ],
+          sat: [
+            ["08.00", "Proyek pribadi: GitHub, portfolio, framework baru"],
+            ["11.00", "Istirahat, makan, kegiatan sosial"],
+            ["15.00", "Selesaikan tugas yang tersisa"],
+            ["19.00", "Malam bebas total"],
+          ],
+          sun: [["", "Santai seharian, tanpa belajar berat"]],
+          exam: [
+            ["06.00", "Bangun, sarapan, cek jadwal ujian"],
+            ["", "Belajar ringan: ulang poin penting (Pomodoro 25/5)"],
+            ["", "Ikut ujian sesuai jadwal kampus"],
+            ["", "Makan teratur dan istirahat"],
+            ["22.00", "Tidur cukup, jangan begadang"],
+          ],
+          free: [
+            ["", "Proyek pribadi atau belajar skill baru"],
+            ["", "Olahraga dan istirahat"],
+            ["", "Rencana kegiatan minggu depan"],
+          ],
+        };
+
+        var S = {
+          user: null,
+          data: null,
+          view: "week",
+          cur: new Date(),
+          tab: "login",
+          msg: "",
+          settings: false,
+          out: "",
+          focus: null,
+        };
+
+        function wk(d) {
+          var n = Math.round((mon(d) - mon(parse(S.data.start))) / (7 * D)) + 1,
+            k;
+          if (n < 1 || n > 16) k = "free";
+          else if (n === 8 || n === 16) k = "exam";
+          else {
+            var f = S.data.first,
+              o = f === "offline" ? "online" : "offline";
+            k = n % 2 === 1 ? f : o;
+          }
+          return { n: n, k: k };
+        }
+        function label(w) {
+          return w.k === "exam" ? (w.n === 8 ? "UTS" : "UAS") : KL[w.k];
+        }
+        function tpl(d) {
+          var w = wk(d),
+            dw = d.getDay(),
+            t,
+            k = w.k;
+          if (k === "free") t = T.free;
+          else if (k === "exam") t = T.exam;
+          else if (dw === 1) t = T.mon;
+          else if (dw === 2) t = T["tue" + k];
+          else if (dw >= 3 && dw <= 5) t = T["wed" + k];
+          else t = dw === 6 ? T.sat : T.sun;
+          t = t.slice();
+          var prep = w.n === 7 || w.n === 14 || w.n === 15;
+          if (prep && (dw === 1 || dw === 6 || (dw >= 3 && dw <= 5)))
+            t.push([
+              "",
+              "Latihan soal dan rangkum materi (Pomodoro 25/5, 2-3 jam)",
+            ]);
+          if (k !== "free" && k !== "exam" && dw === 5) {
+            t.push(["", "Review mingguan 1 jam: rangkum materi Selasa-Jumat"]);
+            t.push(["", "Catat tugas yang belum selesai untuk Senin"]);
+          }
+          if (dw === 0 && k !== "free") {
+            var nx = wk(add(d, 1));
+            t.push(["20.00", "Rencana target minggu depan (30 menit)"]);
+            t.push([
+              "",
+              "Minggu depan: " +
+                (nx.n > 16
+                  ? "di luar semester"
+                  : "minggu " + nx.n + ", " + label(nx)) +
+                ". Siapkan perlengkapan.",
+            ]);
+            if (k === "exam")
+              t.push(["", "Setelah ujian terakhir: ambil 1 hari libur penuh"]);
+          }
+          return t;
+        }
+        function tasks(d) {
+          var k = fmt(d);
+          var b = tpl(d).map(function (x, i) {
+            return { id: "t" + i, time: x[0], text: x[1] };
+          });
+          var c = (S.data.custom[k] || []).map(function (x) {
+            return { id: x.id, time: "", text: x.text, custom: 1 };
+          });
+          return b.concat(c);
+        }
+        function isDone(k, id) {
+          return !!(S.data.checks[k] && S.data.checks[k][id]);
+        }
+        function count(d) {
+          var k = fmt(d),
+            l = tasks(d);
+          return {
+            t: l.length,
+            d: l.filter(function (x) {
+              return isDone(k, x.id);
+            }).length,
+          };
+        }
+        function save() {
+          if (!S.uid) return;
+          LS.set("jp_data_" + S.uid, S.data);
+          clearTimeout(save.t);
+          save.t = setTimeout(push, 500);
+        }
+        async function push() {
+          try {
+            var r = await sb.from("planner").upsert({
+              user_id: S.uid,
+              data: S.data,
+              updated_at: new Date().toISOString(),
+            });
+            if (r.error) throw r.error;
+          } catch (e) {
+            toast("Gagal sinkron ke cloud, tersimpan di perangkat ini");
+          }
+        }
+        function toast(m) {
+          var t = $("#toast");
+          t.textContent = m;
+          t.className = "show";
+          clearTimeout(toast.h);
+          toast.h = setTimeout(function () {
+            t.className = "";
+          }, 2400);
+        }
+
+        /* ---------- Auth dan sinkron (Supabase) ---------- */
+        async function openUser(u) {
+          var d = null;
+          S.msg = "";
+          try {
+            var r = await sb
+              .from("planner")
+              .select("data")
+              .eq("user_id", u.id)
+              .maybeSingle();
+            if (r.data) d = r.data.data;
+          } catch (e) {}
+          d = d || LS.get("jp_data_" + u.id, null) || {};
+          d.start = d.start || fmt(mon(new Date()));
+          d.first = d.first || "offline";
+          d.checks = d.checks || {};
+          d.custom = d.custom || {};
+          S.user = u.email;
+          S.uid = u.id;
+          S.data = d;
+          S.cur = new Date();
+          S.view = "week";
+          S.settings = !d.setup;
+          S.out = "";
+          render();
+        }
+        async function doAuth() {
+          if (!sb) {
+            S.msg = "Supabase belum dikonfigurasi di file ini.";
+            return render();
+          }
+          var em = $("#u").value.trim(),
+            p = $("#p").value,
+            r;
+          if (p.length < 6) {
+            S.msg = "Password minimal 6 karakter.";
+            return render();
+          }
+          try {
+            if (S.tab === "reg") {
+              r = await sb.auth.signUp({ email: em, password: p });
+              if (r.error) {
+                S.msg = r.error.message;
+                return render();
+              }
+              if (!r.data.session) {
+                S.tab = "login";
+                S.msg = "Cek emailmu untuk konfirmasi, lalu masuk.";
+                return render();
+              }
+              return openUser(r.data.user);
+            }
+            r = await sb.auth.signInWithPassword({ email: em, password: p });
+            if (r.error) {
+              S.msg = "Email atau password salah.";
+              return render();
+            }
+            openUser(r.data.user);
+          } catch (e) {
+            S.msg = "Gagal terhubung. Cek koneksi internetmu.";
+            render();
+          }
+        }
+
+        /* ---------- Views ---------- */
+        function authHTML() {
+          var reg = S.tab === "reg";
+          return (
+            '<div class="auth panel"><h1>Jadwal Kuliah</h1><p class="note">Checklist harian Senin sampai Minggu, 16 pertemuan per semester.</p>' +
+            (sb
+              ? ""
+              : '<p class="msg">Isi SB_URL dan SB_KEY di bagian atas script dulu.</p>') +
+            '<div class="seg" style="margin:8px 0"><button data-act="tab-login" class="' +
+            (reg ? "" : "on") +
+            '">Masuk</button><button data-act="tab-reg" class="' +
+            (reg ? "on" : "") +
+            '">Daftar</button></div>' +
+            '<form data-auth><label for="u">Email</label><input id="u" type="email" autocomplete="email" required>' +
+            '<label for="p">Password (minimal 6 karakter)</label><input id="p" type="password" autocomplete="' +
+            (reg ? "new-password" : "current-password") +
+            '" required>' +
+            '<div class="msg" role="alert">' +
+            esc(S.msg) +
+            '</div><button class="btn pri" type="submit">' +
+            (reg ? "Buat akun" : "Masuk") +
+            "</button></form>" +
+            '<p class="note" style="margin-top:12px">Jadwal dan centanganmu tersimpan di cloud, jadi bisa dibuka dari perangkat mana pun dengan akun yang sama.</p></div>'
+          );
+        }
+        function badge(w) {
+          return '<span class="badge ' + w.k + '">' + esc(label(w)) + "</span>";
+        }
+        function appHTML() {
+          var wv = S.view === "week",
+            m = mon(S.cur),
+            ttl;
+          if (wv)
+            ttl = ds(m) + " – " + ds(add(m, 6)) + " " + add(m, 6).getFullYear();
+          else ttl = MN[S.cur.getMonth()] + " " + S.cur.getFullYear();
+          var h =
+            '<div class="top"><h1>Jadwal Kuliah</h1><div class="who">Halo, ' +
+            esc(S.user) +
+            ' <button class="btn" data-act="logout">Keluar</button></div></div>';
+          h +=
+            '<div class="bar"><div class="seg"><button data-act="week" class="' +
+            (wv ? "on" : "") +
+            '">Minggu</button><button data-act="month" class="' +
+            (wv ? "" : "on") +
+            '">Bulan</button></div>' +
+            '<button class="btn" data-act="prev" aria-label="Sebelumnya">‹</button><span class="title">' +
+            ttl +
+            '</span><button class="btn" data-act="next" aria-label="Berikutnya">›</button>' +
+            '<button class="btn" data-act="today">Hari ini</button><span class="sp"></span>' +
+            '<button class="btn" data-act="settings">Pengaturan</button><button class="btn pri" data-act="export">Ekspor TXT</button></div>';
+          if (S.settings) {
+            h +=
+              '<div class="panel"><b>Pengaturan semester</b><label for="st">Tanggal mulai pertemuan 1 (akan disesuaikan ke hari Senin)</label><input id="st" type="date" value="' +
+              esc(S.data.start) +
+              '">' +
+              '<label for="fm">Mode pertemuan 1</label><select id="fm"><option value="offline"' +
+              (S.data.first === "offline" ? " selected" : "") +
+              '>Offline (lalu bergantian)</option><option value="online"' +
+              (S.data.first === "online" ? " selected" : "") +
+              ">Online (lalu bergantian)</option></select>" +
+              '<p class="note">Minggu 8 dan 16 otomatis menjadi UTS dan UAS. Kalau pola offline-onlinemu berbeda, kabari Claude agar jadwalnya disesuaikan.</p>' +
+              '<button class="btn pri" data-act="save-set">Simpan</button></div>';
+          }
+          if (S.out) {
+            h +=
+              '<div class="panel"><b>Hasil ekspor</b><p class="note">Download tidak tersedia di tampilan ini. Salin teks di bawah dan tempel ke file .txt.</p><textarea id="outta" readonly>' +
+              esc(S.out) +
+              '</textarea><p><button class="btn" data-act="copy">Salin</button> <button class="btn" data-act="closeout">Tutup</button></p></div>';
+          }
+          return h + (wv ? weekHTML(m) : monthHTML());
+        }
+        function weekHTML(m) {
+          var w = wk(m),
+            today = fmt(new Date());
+          var h =
+            '<div class="whead"><div class="wn">' +
+            (w.k === "free" ? "Di luar semester" : "Minggu " + w.n) +
+            "</div>" +
+            (w.k === "free" ? "" : badge(w)) +
+            '</div><div class="days">';
+          for (var i = 0; i < 7; i++) {
+            var d = add(m, i),
+              k = fmt(d),
+              c = count(d),
+              l = tasks(d),
+              dw = wk(d);
+            h +=
+              '<section class="day ' +
+              w.k +
+              (k === today ? " today" : "") +
+              '" data-day="' +
+              k +
+              '"><h2>' +
+              DN[d.getDay()] +
+              "<small>" +
+              ds(d) +
+              " · " +
+              c.d +
+              "/" +
+              c.t +
+              '</small></h2><div class="prog"><i style="width:' +
+              (c.t ? (c.d * 100) / c.t : 0) +
+              '%"></i></div><ul>';
+            l.forEach(function (t) {
+              var ck = isDone(k, t.id);
+              h +=
+                '<li class="' +
+                (ck ? "d" : "") +
+                '"><label><input type="checkbox" data-d="' +
+                k +
+                '" data-id="' +
+                t.id +
+                '"' +
+                (ck ? " checked" : "") +
+                '><span class="tm">' +
+                esc(t.time) +
+                '</span><span class="tx">' +
+                esc(t.text) +
+                "</span></label>" +
+                (t.custom
+                  ? '<button class="x" data-del="' +
+                    t.id +
+                    '" data-d="' +
+                    k +
+                    '" aria-label="Hapus tugas">×</button>'
+                  : "") +
+                "</li>";
+            });
+            h +=
+              '</ul><form class="add" data-add="' +
+              k +
+              '"><input placeholder="Tambah tugas…" maxlength="120" aria-label="Tambah tugas ' +
+              DN[d.getDay()] +
+              '"><button class="btn" type="submit">Tambah</button></form></section>';
+          }
+          return h + "</div>";
+        }
+        function monthHTML() {
+          var y = S.cur.getFullYear(),
+            mo = S.cur.getMonth(),
+            first = new Date(y, mo, 1),
+            last = new Date(y, mo + 1, 0);
+          var d = mon(first),
+            end = add(mon(last), 6),
+            today = fmt(new Date());
+          var h =
+            '<div class="legend">' +
+            ["offline", "online", "exam", "free"]
+              .map(function (k) {
+                return badge({ k: k, n: k === "exam" ? 8 : 0 });
+              })
+              .join("")
+              .replace(">Ujian<", ">UTS / UAS<") +
+            '</div><div class="mhead">' +
+            ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"]
+              .map(function (x) {
+                return "<div>" + x + "</div>";
+              })
+              .join("") +
+            '</div><div class="mgrid">';
+          while (d <= end) {
+            var c = count(d),
+              w = wk(d),
+              k = fmt(d);
+            h +=
+              '<button class="cell ' +
+              w.k +
+              (d.getMonth() !== mo ? " dim" : "") +
+              (k === today ? " today" : "") +
+              '" data-go="' +
+              k +
+              '" title="' +
+              (w.k === "free"
+                ? "Di luar semester"
+                : "Minggu " + w.n + ", " + label(w)) +
+              '"><b>' +
+              d.getDate() +
+              "</b><small>" +
+              c.d +
+              "/" +
+              c.t +
+              '</small><div class="prog"><i style="width:' +
+              (c.t ? (c.d * 100) / c.t : 0) +
+              '%"></i></div></button>';
+            d = add(d, 1);
+          }
+          return (
+            h +
+            '</div><p class="note" style="margin-top:12px">Ketuk tanggal untuk membuka minggunya.</p>'
+          );
+        }
+        function render() {
+          $("#app").innerHTML = S.user ? appHTML() : authHTML();
+          if (S.focus) {
+            var e = document.querySelector('[data-day="' + S.focus + '"]');
+            if (e) e.scrollIntoView({ block: "start" });
+            S.focus = null;
+          }
+        }
+
+        /* ---------- Export ---------- */
+        function dayLines(d) {
+          var k = fmt(d),
+            c = count(d),
+            l = [
+              "",
+              DN[d.getDay()] +
+                ", " +
+                d.getDate() +
+                " " +
+                MN[d.getMonth()] +
+                " " +
+                d.getFullYear() +
+                " (" +
+                c.d +
+                "/" +
+                c.t +
+                ")",
+            ];
+          tasks(d).forEach(function (t) {
+            l.push(
+              "[" +
+                (isDone(k, t.id) ? "x" : " ") +
+                "] " +
+                (t.time ? t.time + " " : "") +
+                t.text,
+            );
+          });
+          return l;
+        }
+        async function exportTxt() {
+          var L = [],
+            name,
+            days = [],
+            i;
+          if (S.view === "week") {
+            var m = mon(S.cur),
+              w = wk(m);
+            L.push(
+              "JADWAL " +
+                (w.k === "free"
+                  ? "DI LUAR SEMESTER"
+                  : "MINGGU " + w.n + " (" + label(w) + ")") +
+                " | " +
+                ds(m) +
+                " - " +
+                ds(add(m, 6)) +
+                " " +
+                add(m, 6).getFullYear(),
+            );
+            for (i = 0; i < 7; i++) days.push(add(m, i));
+            name = "jadwal-minggu-" + fmt(m) + ".txt";
+          } else {
+            var y = S.cur.getFullYear(),
+              mo = S.cur.getMonth(),
+              n = new Date(y, mo + 1, 0).getDate();
+            L.push("JADWAL BULAN " + MN[mo].toUpperCase() + " " + y);
+            for (i = 1; i <= n; i++) days.push(new Date(y, mo, i));
+            name = "jadwal-bulan-" + y + "-" + pad(mo + 1) + ".txt";
+          }
+          var T0 = 0,
+            D0 = 0;
+          days.forEach(function (d, i) {
+            var c = count(d);
+            T0 += c.t;
+            D0 += c.d;
+            if (S.view === "month" && (d.getDay() === 1 || i === 0)) {
+              var w = wk(d);
+              L.push(
+                "",
+                "=== " +
+                  (w.k === "free"
+                    ? "Di luar semester"
+                    : "Minggu " + w.n + " (" + label(w) + ")") +
+                  " ===",
+              );
+            }
+            L = L.concat(dayLines(d));
+          });
+          L.splice(
+            1,
+            0,
+            "Selesai: " +
+              D0 +
+              " dari " +
+              T0 +
+              " tugas (" +
+              (T0 ? Math.round((D0 * 100) / T0) : 0) +
+              "%)",
+          );
+          var text = L.join("\n") + "\n";
+          var dl = null;
+          try {
+            dl =
+              window.claude && claude.use
+                ? await claude.use("downloads")
+                : null;
+          } catch (e) {}
+          if (!dl) {
+            try {
+              var an = document.createElement("a");
+              an.href = URL.createObjectURL(
+                new Blob([text], { type: "text/plain" }),
+              );
+              an.download = name;
+              document.body.appendChild(an);
+              an.click();
+              an.remove();
+              toast("Ekspor selesai");
+              return;
+            } catch (e) {}
+            S.out = text;
+            return render();
+          }
+          try {
+            await dl.save({ filename: name, data: text });
+            toast("Ekspor selesai");
+          } catch (e) {
+            if (e && e.code === "declined") return;
+            S.out = text;
+            render();
+          }
+        }
+
+        /* ---------- Events ---------- */
+        document.addEventListener("click", function (e) {
+          var el = e.target.closest("[data-act],[data-go],[data-del]");
+          if (!el) return;
+          if (el.dataset.go) {
+            S.cur = parse(el.dataset.go);
+            S.view = "week";
+            S.focus = el.dataset.go;
+            return render();
+          }
+          if (el.dataset.del) {
+            var k = el.dataset.d;
+            S.data.custom[k] = (S.data.custom[k] || []).filter(function (x) {
+              return x.id !== el.dataset.del;
+            });
+            if (S.data.checks[k]) delete S.data.checks[k][el.dataset.del];
+            save();
+            return render();
+          }
+          var a = el.dataset.act;
+          if (a === "tab-login" || a === "tab-reg") {
+            S.tab = a === "tab-reg" ? "reg" : "login";
+            S.msg = "";
+            return render();
+          }
+          if (a === "logout") {
+            if (sb) sb.auth.signOut();
+            S.uid = null;
+            S.user = null;
+            S.data = null;
+            S.msg = "";
+            return render();
+          }
+          if (a === "week" || a === "month") {
+            S.view = a;
+            return render();
+          }
+          if (a === "today") {
+            S.cur = new Date();
+            S.focus = S.view === "week" ? fmt(new Date()) : null;
+            return render();
+          }
+          if (a === "prev" || a === "next") {
+            var s = a === "next" ? 1 : -1;
+            S.cur =
+              S.view === "week"
+                ? add(S.cur, 7 * s)
+                : new Date(S.cur.getFullYear(), S.cur.getMonth() + s, 1);
+            return render();
+          }
+          if (a === "settings") {
+            S.settings = !S.settings;
+            return render();
+          }
+          if (a === "save-set") {
+            var v = $("#st").value;
+            if (!v) {
+              toast("Isi tanggal mulai dulu");
+              return;
+            }
+            S.data.start = fmt(mon(parse(v)));
+            S.data.first = $("#fm").value;
+            S.data.setup = 1;
+            save();
+            S.settings = false;
+            S.cur = parse(S.data.start);
+            render();
+            toast("Pengaturan disimpan");
+            return;
+          }
+          if (a === "export") return exportTxt();
+          if (a === "closeout") {
+            S.out = "";
+            return render();
+          }
+          if (a === "copy") {
+            var ta = $("#outta");
+            ta.select();
+            try {
+              navigator.clipboard.writeText(S.out).then(
+                function () {
+                  toast("Tersalin");
+                },
+                function () {
+                  document.execCommand("copy");
+                  toast("Tersalin");
+                },
+              );
+            } catch (x) {
+              try {
+                document.execCommand("copy");
+                toast("Tersalin");
+              } catch (y) {
+                toast("Salin manual dari kotak teks");
+              }
+            }
+          }
+        });
+        document.addEventListener("change", function (e) {
+          var c = e.target;
+          if (c.type !== "checkbox" || !c.dataset.id) return;
+          var k = c.dataset.d;
+          S.data.checks[k] = S.data.checks[k] || {};
+          if (c.checked) S.data.checks[k][c.dataset.id] = 1;
+          else delete S.data.checks[k][c.dataset.id];
+          save();
+          var y = window.scrollY;
+          render();
+          window.scrollTo(0, y);
+        });
+        document.addEventListener("submit", function (e) {
+          e.preventDefault();
+          var f = e.target;
+          if (f.hasAttribute("data-auth")) return doAuth();
+          if (f.dataset.add) {
+            var inp = f.querySelector("input"),
+              tx = inp.value.trim();
+            if (!tx) return;
+            var k = f.dataset.add;
+            (S.data.custom[k] = S.data.custom[k] || []).push({
+              id: "c" + Date.now(),
+              text: tx,
+            });
+            save();
+            var y = window.scrollY;
+            render();
+            window.scrollTo(0, y);
+          }
+        });
+
+        render();
+        if (sb)
+          sb.auth.getSession().then(function (r) {
+            var x = r.data && r.data.session;
+            if (x) openUser(x.user);
+          });
+      })();
+    </script>
+  </body>
+</html>
